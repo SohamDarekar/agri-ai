@@ -13,3 +13,5 @@ retry-requests
 pydantic
 xgboost
 tensorflow
+requests
+python-dotenv

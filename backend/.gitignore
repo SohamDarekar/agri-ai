@@ -2,3 +2,4 @@ __pycache__/
 *.sqlite
 venv/
 *.ipynb_checkpoints/
+.env

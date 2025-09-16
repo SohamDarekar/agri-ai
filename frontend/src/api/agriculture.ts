@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import apiClient from './apiClient';
 import {
   CropRecommendationResponse,
   YieldPredictionResponse,
@@ -19,12 +19,13 @@ export class AgricultureAPI {
     data: EnrichedSoilData,
     location: Location
   ): Promise<CropRecommendationResponse> {
-    return apiClient.post('/recommend-crop', data, {
+    const response = await apiClient.post('/recommend-crop', data, {
       params: {
         lat: location.lat,
         lon: location.lon,
       },
     });
+    return response.data;
   }
 
   // Yield Prediction
@@ -32,12 +33,13 @@ export class AgricultureAPI {
     data: YieldPredictionData,
     location: Location
   ): Promise<YieldPredictionResponse> {
-    return apiClient.post('/predict-yield', data, {
+    const response = await apiClient.post('/predict-yield', data, {
       params: {
         lat: location.lat,
         lon: location.lon,
       },
     });
+    return response.data;
   }
 
   // Disease Detection
@@ -45,21 +47,30 @@ export class AgricultureAPI {
     const formData = new FormData();
     formData.append('file', imageFile);
     
-    return apiClient.postFormData('/detect-disease', formData);
+    const response = await apiClient.post('/detect-disease', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
   }
 
   // Mandi Prices
   static async getMandiPrices(data: MandiPriceData): Promise<MandiPriceResponse> {
-    return apiClient.get('/api/prices', {
-      state: data.state,
-      district: data.district,
-      crop: data.crop,
+    const response = await apiClient.get('/api/prices', {
+      params: {
+        state: data.state,
+        district: data.district,
+        crop: data.crop,
+      },
     });
+    return response.data;
   }
 
   // Get Available Crops
   static async getAvailableCrops(): Promise<CropsResponse> {
-    return apiClient.get('/api/crops');
+    const response = await apiClient.get('/api/crops');
+    return response.data;
   }
 
   // Profit & Sustainability Calculator
@@ -67,17 +78,23 @@ export class AgricultureAPI {
     data: ProfitCalculatorData,
     location: Location
   ): Promise<ProfitCalculatorResponse> {
-    return apiClient.post('/calculate-profit-sustainability', data, {
+    const response = await apiClient.post('/calculate-profit-sustainability', data, {
       params: {
         lat: location.lat,
         lon: location.lon,
       },
     });
+    return response.data;
   }
 
   // Health check
   static async healthCheck(): Promise<{ status: string }> {
-    return apiClient.healthCheck();
+    try {
+      await apiClient.get('/docs');
+      return { status: 'ok' };
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

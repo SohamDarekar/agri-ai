@@ -22,6 +22,23 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
+  // Extract HTML button props that don't conflict with motion props
+  const {
+    onAnimationStart,
+    onAnimationEnd,
+    onAnimationIteration,
+    onDragStart,
+    onDragEnd,
+    onDrag,
+    onDragEnter,
+    onDragExit,
+    onDragLeave,
+    onDragOver,
+    onDrop,
+    onWheel,
+    ...buttonProps
+  } = props;
+  
   const baseClasses = 'touch-target inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variants = {
@@ -50,7 +67,7 @@ export const Button: React.FC<ButtonProps> = ({
         ${className}
       `}
       disabled={isDisabled}
-      {...props}
+      {...buttonProps}
     >
       {loading && (
         <div className="mr-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

@@ -29,7 +29,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   }, [language]);
 
   const t = (key: TranslationKeys): string => {
-    return translations[language][key] || translations.en[key] || key;
+    const langTranslations = translations[language] as Record<string, string>;
+    return langTranslations[key] || translations.en[key] || key;
   };
 
   const value: LanguageContextType = {

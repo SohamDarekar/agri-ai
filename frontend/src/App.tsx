@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from './store';
+import { useAppDispatch } from './store';
 import { setOnlineStatus, setTheme } from './store/appSlice';
 import { useOnlineStatus, useTheme } from './hooks';
 import { NetworkStatus, LoadingPage } from './components';

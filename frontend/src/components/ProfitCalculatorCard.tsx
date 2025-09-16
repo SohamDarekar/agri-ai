@@ -14,10 +14,9 @@ import { ErrorState } from './Error';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface ProfitCalculatorCardProps {
-  onClose?: () => void;
 }
 
-export const ProfitCalculatorCard: React.FC<ProfitCalculatorCardProps> = ({ onClose }) => {
+export const ProfitCalculatorCard: React.FC<ProfitCalculatorCardProps> = () => {
   const { t } = useLanguage();
   const [formData, setFormData] = useState<ProfitCalculatorData>({
     nitrogen: 40,

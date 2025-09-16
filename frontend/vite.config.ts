@@ -20,12 +20,12 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          tensorflow: ['@tensorflow/tfjs', '@tensorflow/tfjs-tflite'],
+          tensorflow: ['@tensorflow/tfjs'],
         },
       },
     },
   },
   optimizeDeps: {
-    include: ['@tensorflow/tfjs', '@tensorflow/tfjs-tflite'],
+    include: ['@tensorflow/tfjs'],
   },
 })

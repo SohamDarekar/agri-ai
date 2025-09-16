@@ -2,8 +2,6 @@ import * as tf from '@tensorflow/tfjs';
 import { AgricultureAPI } from '../api/agriculture';
 
 export class TFLiteService {
-  private diseaseModel: tf.LayersModel | null = null;
-  private classIndices: Record<string, number> = {};
   private modelLoaded = false;
 
   constructor() {
@@ -31,9 +29,9 @@ export class TFLiteService {
       // In a real implementation, you would convert the TFLite model to TensorFlow.js format
       // using: tensorflowjs_converter --input_format=tf_lite --output_format=tfjs_layers_model model.tflite model_js/
       
-      // Load class indices
+      // Load class indices for reference
       const response = await fetch('/models/class_indices.json');
-      this.classIndices = await response.json();
+      await response.json(); // Validate the file exists but don't store it
       
       this.modelLoaded = true;
       console.log('Disease detection model loaded successfully');

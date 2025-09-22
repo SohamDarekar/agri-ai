@@ -76,7 +76,7 @@ const YieldPredictionPage: React.FC = () => {
       if (cached) return cached;
       
       // Make API call
-      const result = await AgricultureAPI.predictYield(formData, effectiveLocation);
+      const result = await AgricultureAPI.predictYield(formData);
       
       // Cache result for 10 minutes
       await cacheService.set(cacheKey, result, 10 * 60 * 1000);
@@ -383,7 +383,7 @@ const YieldPredictionPage: React.FC = () => {
                     {prediction.estimated_yield_tons_per_hectare} tons/ha
                   </div>
                   <div className="text-gray-600 dark:text-gray-400">
-                    {t('estimatedYieldFor')} {t(prediction.predicted_crop.toLowerCase() as any) || prediction.predicted_crop}
+                    {t('estimatedYieldFor')} {prediction.predicted_crop ? (t(prediction.predicted_crop.toLowerCase() as any) || prediction.predicted_crop) : 'your crop'}
                   </div>
                 </div>
 

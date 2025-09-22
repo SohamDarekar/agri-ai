@@ -7,8 +7,8 @@ export interface CropData {
   value: string;
   label: string;
   api_names: string[];
-  cost_per_hectare: number;
-  yield_range: [number, number];
+  estimated_cost_per_hectare: number;
+  yield_tons_per_hectare_range: [number, number];
   sustainability: {
     water_usage_rating: number;
     pesticide_rating: number;
@@ -64,15 +64,18 @@ export interface MandiPriceData {
   crop: string;
 }
 
+export interface PriceData {
+  commodity: string;
+  modal_price: number;
+  min_price: number;
+  max_price: number;
+}
+
 export interface MandiPriceResult {
-  crop: string;
   state: string;
   district: string;
-  minPrice: number;
-  maxPrice: number;
-  market: string;
-  message?: string;
-  dataSource?: string;
+  crop: string;
+  price_data: PriceData;
 }
 
 export interface ProfitCalculatorData {

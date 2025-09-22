@@ -36,7 +36,7 @@
     "sustainability": { "water_usage_rating": 7, "pesticide_rating": 8, "soil_health_impact": 6 }
   },
   "cotton": {
-    "api_names": ["Cotton"],
+    "api_names": ["Kapas (Cotton)"],
     "estimated_cost_per_hectare": 90000,
     "yield_tons_per_hectare_range": [1.5, 3.0],
     "sustainability": { "water_usage_rating": 9, "pesticide_rating": 10, "soil_health_impact": 8 }
@@ -130,6 +130,30 @@
     "estimated_cost_per_hectare": 35000,
     "yield_tons_per_hectare_range": [20, 30],
     "sustainability": { "water_usage_rating": 7, "pesticide_rating": 6, "soil_health_impact": 4 }
+  },
+  "potato": {
+    "api_names": ["Potato"],
+    "estimated_cost_per_hectare": 80000,
+    "yield_tons_per_hectare_range": [15, 25],
+    "sustainability": { "water_usage_rating": 6, "pesticide_rating": 7, "soil_health_impact": 5 }
+  },
+  "onion": {
+    "api_names": ["Onion"],
+    "estimated_cost_per_hectare": 60000,
+    "yield_tons_per_hectare_range": [12, 20],
+    "sustainability": { "water_usage_rating": 5, "pesticide_rating": 6, "soil_health_impact": 4 }
+  },
+  "paddy": {
+    "api_names": ["Paddy(Dhan)"],
+    "estimated_cost_per_hectare": 55000,
+    "yield_tons_per_hectare_range": [3.0, 6.0],
+    "sustainability": { "water_usage_rating": 10, "pesticide_rating": 6, "soil_health_impact": 6 }
+  },
+  "wheat": {
+    "api_names": ["Wheat"],
+    "estimated_cost_per_hectare": 40000,
+    "yield_tons_per_hectare_range": [2.5, 4.5],
+    "sustainability": { "water_usage_rating": 4, "pesticide_rating": 5, "soil_health_impact": 3 }
   },
   "Default": {
     "api_names": [""],

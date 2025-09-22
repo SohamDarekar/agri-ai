@@ -143,11 +143,14 @@ export const CropSelector: React.FC<CropSelectorProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-600 dark:text-gray-400">
                     <div>
                       <span className="font-medium">Est. Cost:</span>{' '}
-                      ₹{selectedCrop.cost_per_hectare.toLocaleString()}/ha
+                      ₹{(selectedCrop.estimated_cost_per_hectare || 0).toLocaleString()}/ha
                     </div>
                     <div>
                       <span className="font-medium">Yield Range:</span>{' '}
-                      {selectedCrop.yield_range[0]}-{selectedCrop.yield_range[1]} t/ha
+                      {(() => {
+                        const yieldRange = selectedCrop.yield_tons_per_hectare_range || [0, 0];
+                        return `${yieldRange[0]}-${yieldRange[1]} t/ha`;
+                      })()}
                     </div>
                   </div>
                 )}

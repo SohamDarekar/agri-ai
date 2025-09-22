@@ -45,7 +45,18 @@ const MarketInsightsPage: React.FC = () => {
       const response = await AgricultureAPI.getMandiPrices(formData);
       setResult(response);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : t('genericError'));
+      if (err instanceof Error) {
+        // Handle different error cases
+        if (err.message.includes('404') || err.message.includes('not found')) {
+          setError(`No price data found for ${formData.crop} in ${formData.district}, ${formData.state}. Try a different location or crop.`);
+        } else if (err.message.includes('503')) {
+          setError('Service temporarily unavailable. Please try again later.');
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError(t('genericError'));
+      }
     } finally {
       setLoading(false);
     }
@@ -176,128 +187,159 @@ const MarketInsightsPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          {result.message ? (
-            <Card className="p-6 sm:p-8 text-center">
-              <div className="text-4xl mb-4">📊</div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                {t('noDataFound')}
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                {result.message}
-              </p>
-            </Card>
-          ) : (
-            <Card className="overflow-hidden">
-              <div className="bg-gradient-to-br from-orange-500 to-red-500 text-white p-6 sm:p-8">
+          <Card className="overflow-hidden">
+            <div className="bg-gradient-to-br from-orange-500 to-red-500 text-white p-6 sm:p-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold mb-2">
+                    {t('priceInformation')}
+                  </h2>
+                  <div className="flex items-center text-orange-100">
+                    <MdLocationOn className="mr-2" />
+                    <span className="text-sm sm:text-base">
+                      {result.district}, {result.state}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-4xl opacity-20">
+                  <MdTrendingUp />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 sm:p-8">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {/* Crop Info */}
+                <div className="text-center">
+                  <div className="text-3xl mb-2">🌾</div>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                    {t('commodity')}
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-400 font-medium">
+                    {result.price_data.commodity}
+                  </p>
+                </div>
+
+                {/* Modal Price */}
+                <div className="text-center">
+                  <div className="flex items-center justify-center text-blue-500 text-2xl mb-2">
+                    <FaRupeeSign />
+                    <span className="ml-1 font-bold">
+                      {formatPrice(result.price_data.modal_price)}
+                    </span>
+                  </div>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                    Modal Price
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    {t('perQuintal')}
+                  </p>
+                </div>
+
+                {/* Min Price */}
+                <div className="text-center">
+                  <div className="flex items-center justify-center text-green-500 text-2xl mb-2">
+                    <FaRupeeSign />
+                    <span className="ml-1 font-bold">
+                      {formatPrice(result.price_data.min_price)}
+                    </span>
+                  </div>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                    {t('minimumPrice')}
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    {t('perQuintal')}
+                  </p>
+                </div>
+
+                {/* Max Price */}
+                <div className="text-center">
+                  <div className="flex items-center justify-center text-red-500 text-2xl mb-2">
+                    <FaRupeeSign />
+                    <span className="ml-1 font-bold">
+                      {formatPrice(result.price_data.max_price)}
+                    </span>
+                  </div>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                    {t('maximumPrice')}
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    {t('perQuintal')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Market Info */}
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold mb-2">
-                      {t('priceInformation')}
-                    </h2>
-                    <div className="flex items-center text-orange-100">
-                      <MdLocationOn className="mr-2" />
-                      <span className="text-sm sm:text-base">
-                        {result.district}, {result.state}
-                      </span>
-                    </div>
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                      Market Location
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {result.district}, {result.state}
+                    </p>
                   </div>
-                  <div className="text-4xl opacity-20">
-                    <MdTrendingUp />
-                  </div>
+                  <Button
+                    onClick={() => handleSubmit}
+                    className="btn-secondary flex items-center space-x-2"
+                  >
+                    <MdRefresh />
+                    <span>{t('refresh')}</span>
+                  </Button>
                 </div>
               </div>
 
-              <div className="p-6 sm:p-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Crop Info */}
-                  <div className="text-center">
-                    <div className="text-3xl mb-2">🌾</div>
-                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                      {t('commodity')}
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 font-medium">
+              {/* Price Range Info */}
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                    {t('priceRange')}
+                  </span>
+                  <span className="text-sm text-blue-600 dark:text-blue-300">
+                    ₹{formatPrice(result.price_data.max_price - result.price_data.min_price)} {t('difference')}
+                  </span>
+                </div>
+                <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-green-500 to-red-500 h-2 rounded-full"
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div className="flex justify-between mt-2 text-xs text-blue-600 dark:text-blue-300">
+                  <span>{t('minimum')}</span>
+                  <span>{t('maximum')}</span>
+                </div>
+              </div>
+
+              {/* Additional Info Section */}
+              <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">
+                  Price Summary
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span className="text-green-600 dark:text-green-300 font-medium">Average:</span>
+                    <span className="ml-2 text-green-800 dark:text-green-100 font-bold">
+                      ₹{formatPrice(result.price_data.modal_price)}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-green-600 dark:text-green-300 font-medium">Range:</span>
+                    <span className="ml-2 text-green-800 dark:text-green-100 font-bold">
+                      ₹{formatPrice(result.price_data.min_price)} - ₹{formatPrice(result.price_data.max_price)}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-green-600 dark:text-green-300 font-medium">Crop:</span>
+                    <span className="ml-2 text-green-800 dark:text-green-100 font-bold capitalize">
                       {result.crop}
-                    </p>
-                  </div>
-
-                  {/* Min Price */}
-                  <div className="text-center">
-                    <div className="flex items-center justify-center text-green-500 text-2xl mb-2">
-                      <FaRupeeSign />
-                      <span className="ml-1 font-bold">
-                        {formatPrice(result.minPrice)}
-                      </span>
-                    </div>
-                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                      {t('minimumPrice')}
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      {t('perQuintal')}
-                    </p>
-                  </div>
-
-                  {/* Max Price */}
-                  <div className="text-center">
-                    <div className="flex items-center justify-center text-red-500 text-2xl mb-2">
-                      <FaRupeeSign />
-                      <span className="ml-1 font-bold">
-                        {formatPrice(result.maxPrice)}
-                      </span>
-                    </div>
-                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                      {t('maximumPrice')}
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      {t('perQuintal')}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Market Info */}
-                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                        {t('market')}
-                      </h4>
-                      <p className="text-gray-600 dark:text-gray-400">
-                        {result.market}
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => handleSubmit}
-                      className="btn-secondary flex items-center space-x-2"
-                    >
-                      <MdRefresh />
-                      <span>{t('refresh')}</span>
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Price Range Info */}
-                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-blue-800 dark:text-blue-200 font-medium">
-                      {t('priceRange')}
                     </span>
-                    <span className="text-sm text-blue-600 dark:text-blue-300">
-                      ₹{formatPrice(result.maxPrice - result.minPrice)} {t('difference')}
-                    </span>
-                  </div>
-                  <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-green-500 to-red-500 h-2 rounded-full"
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-                  <div className="flex justify-between mt-2 text-xs text-blue-600 dark:text-blue-300">
-                    <span>{t('minimum')}</span>
-                    <span>{t('maximum')}</span>
                   </div>
                 </div>
               </div>
-            </Card>
-          )}
+            </div>
+          </Card>
         </motion.div>
       )}
 

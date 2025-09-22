@@ -84,7 +84,7 @@ const CropRecommendationPage: React.FC = () => {
       if (cached) return cached;
       
       // Make API call
-      const result = await AgricultureAPI.recommendCrop(formData, effectiveLocation);
+      const result = await AgricultureAPI.recommendCrop(formData);
       
       // Cache result for 10 minutes
       await cacheService.set(cacheKey, result, 10 * 60 * 1000);

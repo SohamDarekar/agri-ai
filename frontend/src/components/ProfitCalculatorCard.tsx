@@ -186,7 +186,7 @@ export const ProfitCalculatorCard: React.FC<ProfitCalculatorCardProps> = () => {
     setError(null);
     
     try {
-      const result = await AgricultureAPI.calculateProfitSustainability(formData, effectiveLocation);
+      const result = await AgricultureAPI.calculateProfitSustainability(formData);
       setResult(result);
     } catch (err: any) {
       setError(err.message || 'Failed to calculate profit and sustainability metrics');

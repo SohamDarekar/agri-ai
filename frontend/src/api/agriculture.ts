@@ -9,36 +9,28 @@ import {
   YieldPredictionData,
   ProfitCalculatorData,
   MandiPriceData,
-  Location,
   CropsResponse,
 } from './types';
 
 export class AgricultureAPI {
   // Crop Recommendation
   static async recommendCrop(
-    data: EnrichedSoilData,
-    location: Location
+    data: EnrichedSoilData
   ): Promise<CropRecommendationResponse> {
-    const response = await apiClient.post('/recommend-crop', data, {
-      params: {
-        lat: location.lat,
-        lon: location.lon,
-      },
+    const response = await apiClient.post('/api/recommend/crop', {
+      ...data,
+      temperature: 25, // Default value as backend expects this
+      humidity: 65,    // Default value as backend expects this
+      rainfall: 100,   // Default value as backend expects this
     });
-    return response.data;
+    return response.data.recommendations;
   }
 
   // Yield Prediction
   static async predictYield(
-    data: YieldPredictionData,
-    location: Location
+    data: YieldPredictionData
   ): Promise<YieldPredictionResponse> {
-    const response = await apiClient.post('/predict-yield', data, {
-      params: {
-        lat: location.lat,
-        lon: location.lon,
-      },
-    });
+    const response = await apiClient.post('/predict-yield', data);
     return response.data;
   }
 
@@ -47,12 +39,15 @@ export class AgricultureAPI {
     const formData = new FormData();
     formData.append('file', imageFile);
     
-    const response = await apiClient.post('/detect-disease', formData, {
+    const response = await apiClient.post('/api/predict/disease', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data;
+    return {
+      predicted_disease: response.data.prediction,
+      confidence: response.data.confidence.toFixed(4),
+    };
   }
 
   // Mandi Prices
@@ -75,15 +70,9 @@ export class AgricultureAPI {
 
   // Profit & Sustainability Calculator
   static async calculateProfitSustainability(
-    data: ProfitCalculatorData,
-    location: Location
+    data: ProfitCalculatorData
   ): Promise<ProfitCalculatorResponse> {
-    const response = await apiClient.post('/calculate-profit-sustainability', data, {
-      params: {
-        lat: location.lat,
-        lon: location.lon,
-      },
-    });
+    const response = await apiClient.post('/calculate-profit-sustainability', data);
     return response.data;
   }
 

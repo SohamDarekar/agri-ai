@@ -271,36 +271,37 @@ def recommend_crop_api(data: EnrichedSoilData):
         raise HTTPException(status_code=503, detail="Crop recommendation model is not ready.")
 
     try:
+        # Get weather data for the specified season
+        weather_data = get_seasonal_weather_averages(19.07, 72.87, data.season)
+        
         # Create input DataFrame with the exact structure the model expects
+        # Order must match: ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
         input_df = pd.DataFrame([{
             'N': data.nitrogen,
             'P': data.phosphorus,
             'K': data.potassium,
+            'temperature': weather_data['temperature'],
+            'humidity': weather_data['humidity'],
             'ph': data.ph,
-            'temperature': 25.0,  # Default temperature
-            'humidity': 65.0,     # Default humidity
-            'rainfall': 100.0,    # Default rainfall
-            'soil_type': data.soil_type
+            'rainfall': weather_data['rainfall']
         }])
         
-        # Handle soil type encoding
-        soil_encoded = crop_soil_encoder.transform(input_df[['soil_type']])
-        soil_df = pd.DataFrame(soil_encoded, columns=crop_soil_encoder.get_feature_names_out(['soil_type']))
+        # Get soil type data
+        soil_type_df = pd.DataFrame({'soil_type': [data.soil_type]})
         
-        # Use only the numerical features that the model was trained with
-        numerical_cols = ['N', 'P', 'K', 'ph', 'temperature', 'humidity', 'rainfall']
-        numerical_df = input_df[numerical_cols]
-
-        # Combine numerical and categorical features
-        combined_df = pd.concat([numerical_df, soil_df], axis=1)
+        # Scale numerical features first (the scaler expects exactly 7 features)
+        scaled_numerical = crop_scaler.transform(input_df)
         
-        # Scale the features
-        scaled_features = crop_scaler.transform(combined_df)
+        # Transform categorical features separately
+        encoded_soil = crop_soil_encoder.transform(soil_type_df)
+        
+        # Combine scaled numerical with encoded categorical features
+        combined_features = np.hstack([scaled_numerical, encoded_soil])
         
         # Run inference using TensorFlow Lite
         input_details = crop_interpreter.get_input_details()
         output_details = crop_interpreter.get_output_details()
-        crop_interpreter.set_tensor(input_details[0]['index'], np.array(scaled_features, dtype=np.float32))
+        crop_interpreter.set_tensor(input_details[0]['index'], np.array(combined_features, dtype=np.float32))
         crop_interpreter.invoke()
         predictions = crop_interpreter.get_tensor(output_details[0]['index'])
         

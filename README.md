@@ -1,4 +1,4 @@
-# AgriAI - Smart Agriculture Platform
+# KrishiSahayak - Smart Agriculture Platform
 
 ![AgriAI Logo](https://img.shields.io/badge/KrishiSahayak-Smart%20Agriculture-green)
 ![Version](https://img.shields.io/badge/version-1.3.0-blue)
